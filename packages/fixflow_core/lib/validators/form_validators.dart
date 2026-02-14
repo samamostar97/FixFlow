@@ -19,7 +19,8 @@ class FormValidators {
 
   static String? email(String? value) {
     if (value == null || value.isEmpty) return null;
-    final emailRegex = RegExp(r'^[\w\.-]+@[\w\.-]+\.\w{2,}$');
+    // Allow standard emails and simple identifiers (for test/dev credentials)
+    final emailRegex = RegExp(r'^[\w\.-]+(@[\w\.-]+\.\w{2,})?$');
     if (!emailRegex.hasMatch(value)) {
       return 'Unesite ispravnu email adresu.';
     }
