@@ -216,6 +216,9 @@ PublishScripts/
 **/[Pp]ackages/*
 # except build/, which is used as an MSBuild target.
 !**/[Pp]ackages/build/
+# except our Flutter shared packages
+!packages/fixflow_core
+!packages/fixflow_core/**
 # Uncomment if necessary however generally it will be regenerated when needed
 #!**/[Pp]ackages/repositories.config
 # NuGet v3's project.json files produces more ignorable files
@@ -416,3 +419,36 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+
+# =========================
+# .NET — Sensitive Config
+# =========================
+appsettings.Development.json
+appsettings.Production.json
+
+# =========================
+# Flutter
+# =========================
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+build/
+**/pubspec.lock
+
+# Flutter mobile platform files
+**/ios/Pods/
+**/ios/.symlinks/
+**/android/.gradle/
+**/android/local.properties
+
+# =========================
+# Claude
+# =========================
+CLAUDE.md
+.claude/
+claude-ui.md
+UI_REDESIGN_PROGRESS.md
+DESKTOP_SMOKE_CHECKLIST.md
+DESKTOP_SMOKE_LOG.md
+nul
