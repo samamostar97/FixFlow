@@ -5,6 +5,7 @@ import 'package:fixflow_desktop/screens/admin/dashboard_screen.dart';
 import 'package:fixflow_desktop/screens/admin/offers_screen.dart';
 import 'package:fixflow_desktop/screens/admin/repair_categories_screen.dart';
 import 'package:fixflow_desktop/screens/admin/repair_requests_screen.dart';
+import 'package:fixflow_desktop/screens/admin/payments_screen.dart';
 import 'package:fixflow_desktop/screens/admin/technician_profiles_screen.dart';
 import 'package:fixflow_desktop/screens/auth/login_screen.dart';
 import 'package:fixflow_desktop/widgets/layout/admin_shell_frame.dart';
@@ -79,6 +80,11 @@ class _AdminDashboardState extends ConsumerState<_AdminDashboard> {
       label: 'Poslovi',
     ),
     SidebarItem(
+      icon: LucideIcons.creditCard,
+      selectedIcon: LucideIcons.creditCard,
+      label: 'Uplate',
+    ),
+    SidebarItem(
       icon: LucideIcons.userCog,
       selectedIcon: LucideIcons.userCog,
       label: 'Majstori',
@@ -97,6 +103,7 @@ class _AdminDashboardState extends ConsumerState<_AdminDashboard> {
     RepairRequestsScreen(),
     OffersScreen(),
     BookingsScreen(),
+    PaymentsScreen(),
     TechnicianProfilesScreen(),
     RepairCategoriesScreen(),
   ];

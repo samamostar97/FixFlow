@@ -10,6 +10,7 @@ class TechnicianProfileResponse {
   final String? workingHours;
   final String? zone;
   final bool isVerified;
+  final double averageRating;
   final DateTime createdAt;
 
   TechnicianProfileResponse({
@@ -24,6 +25,7 @@ class TechnicianProfileResponse {
     this.workingHours,
     this.zone,
     required this.isVerified,
+    required this.averageRating,
     required this.createdAt,
   });
 
@@ -45,6 +47,7 @@ class TechnicianProfileResponse {
       workingHours: json['workingHours'] as String?,
       zone: json['zone'] as String?,
       isVerified: json['isVerified'] as bool,
+      averageRating: (json['averageRating'] as num).toDouble(),
       createdAt: DateTime.parse(json['createdAt'] as String).toLocal(),
     );
   }

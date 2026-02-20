@@ -34,5 +34,9 @@ public class TechnicianProfileConfiguration : IEntityTypeConfiguration<Technicia
         builder.Property(t => t.IsVerified)
             .IsRequired()
             .HasDefaultValue(false);
+
+        builder.Property(t => t.AverageRating)
+            .IsRequired()
+            .HasDefaultValue(0.0);
     }
 }

@@ -2,11 +2,14 @@ import 'package:fixflow_core/fixflow_core.dart';
 import 'package:fixflow_mobile/constants/app_spacing.dart';
 import 'package:fixflow_mobile/providers/core_providers.dart';
 import 'package:fixflow_mobile/screens/customer/widgets/preference_type_selector.dart';
+import 'package:fixflow_mobile/widgets/shared/image_picker_section.dart';
 import 'package:fixflow_mobile/widgets/shared/mobile_form_sections.dart';
 import 'package:fixflow_mobile/widgets/shared/mobile_page_scaffold.dart';
 import 'package:fixflow_mobile/widgets/shared/mobile_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:http/http.dart' as http;
+import 'package:image_picker/image_picker.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
 class CreateRepairRequestScreen extends ConsumerStatefulWidget {
@@ -26,6 +29,7 @@ class _CreateRepairRequestScreenState
   int _preferenceType = 0;
   bool _isSubmitting = false;
   List<LookupResponse>? _categories;
+  List<XFile> _pickedImages = [];
 
   @override
   void initState() {
@@ -68,7 +72,7 @@ class _CreateRepairRequestScreenState
     setState(() => _isSubmitting = true);
     try {
       final service = ref.read(repairRequestServiceProvider);
-      await service.create(
+      final created = await service.create(
         CreateRepairRequestRequest(
           categoryId: _selectedCategoryId!,
           description: _descriptionController.text.trim(),
@@ -78,6 +82,19 @@ class _CreateRepairRequestScreenState
               : _addressController.text.trim(),
         ).toJson(),
       );
+      if (_pickedImages.isNotEmpty) {
+        final files = await Future.wait(
+          _pickedImages.map((xf) async {
+            final bytes = await xf.readAsBytes();
+            return http.MultipartFile.fromBytes(
+              'files',
+              bytes,
+              filename: xf.name,
+            );
+          }),
+        );
+        await service.uploadImages(created.id, files);
+      }
       if (!mounted) {
         return;
       }
@@ -132,6 +149,12 @@ class _CreateRepairRequestScreenState
             ),
             const SizedBox(height: AppSpacing.md),
             _buildAddressField(),
+            const SizedBox(height: AppSpacing.md),
+            ImagePickerSection(
+              pickedFiles: _pickedImages,
+              onPickedChanged: (files) =>
+                  setState(() => _pickedImages = files),
+            ),
             const SizedBox(height: AppSpacing.lg),
             MobileFormSubmitButton(
               isLoading: _isSubmitting,

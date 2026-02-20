@@ -23,6 +23,19 @@ class _FakeBookingService extends BookingService {
   Future<BookingResponse> getById(int id) async => booking;
 }
 
+class _FakePaymentService extends PaymentService {
+  _FakePaymentService()
+    : super(
+        client: ApiClient(
+          baseUrl: 'http://localhost',
+          tokenStorage: TokenStorage(),
+        ),
+      );
+
+  @override
+  Future<PaymentResponse?> getByBookingId(int bookingId) async => null;
+}
+
 class _FakeRepairRequestService extends RepairRequestService {
   final RepairRequestResponse request;
 
@@ -57,6 +70,9 @@ void main() {
           overrides: [
             bookingServiceProvider.overrideWithValue(
               _FakeBookingService(booking),
+            ),
+            paymentServiceProvider.overrideWithValue(
+              _FakePaymentService(),
             ),
           ],
           child: MaterialApp(

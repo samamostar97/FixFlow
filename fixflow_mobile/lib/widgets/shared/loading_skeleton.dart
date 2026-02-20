@@ -15,6 +15,8 @@ class AppListSkeleton extends StatelessWidget {
     return ListView.separated(
       padding: padding,
       itemCount: itemCount,
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
       separatorBuilder: (_, separatorIndex) => const SizedBox(height: 12),
       itemBuilder: (_, index) => const _SkeletonCard(),
     );

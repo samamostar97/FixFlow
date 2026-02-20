@@ -2,12 +2,16 @@ import 'package:fixflow_core/fixflow_core.dart';
 import 'package:fixflow_mobile/providers/core_providers.dart';
 import 'package:fixflow_mobile/providers/customer/request_offers_provider.dart';
 import 'package:fixflow_mobile/widgets/shared/confirmation_dialog.dart';
+import 'package:fixflow_mobile/widgets/shared/image_picker_section.dart';
 import 'package:fixflow_mobile/widgets/shared/mobile_async_state_view.dart';
 import 'package:fixflow_mobile/widgets/shared/mobile_page_scaffold.dart';
-import 'package:fixflow_mobile/widgets/shared/repair_request_detail_sections.dart';
+import 'package:fixflow_mobile/widgets/shared/mobile_section_card.dart';
 import 'package:fixflow_mobile/widgets/shared/mobile_snackbar.dart';
+import 'package:fixflow_mobile/widgets/shared/repair_request_detail_sections.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:http/http.dart' as http;
+import 'package:image_picker/image_picker.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
 class RepairRequestDetailScreen extends ConsumerStatefulWidget {
@@ -26,6 +30,7 @@ class _RepairRequestDetailScreenState
   bool _isLoading = true;
   String? _error;
   bool _changed = false;
+  List<XFile> _pickedImages = [];
 
   @override
   void initState() {
@@ -97,6 +102,56 @@ class _RepairRequestDetailScreenState
     }
   }
 
+  Future<void> _uploadPickedImages() async {
+    if (_pickedImages.isEmpty) return;
+    try {
+      final service = ref.read(repairRequestServiceProvider);
+      final files = await Future.wait(
+        _pickedImages.map((xf) async {
+          final bytes = await xf.readAsBytes();
+          return http.MultipartFile.fromBytes(
+            'files',
+            bytes,
+            filename: xf.name,
+          );
+        }),
+      );
+      await service.uploadImages(widget.requestId, files);
+      _changed = true;
+      _pickedImages = [];
+      if (!mounted) return;
+      MobileSnackbar.success(context, 'Slike su uspjesno uploadovane.');
+      await _load();
+    } on ApiException catch (e) {
+      if (!mounted) return;
+      MobileSnackbar.error(context, e.message);
+    }
+  }
+
+  Future<void> _deleteImage(int imageId) async {
+    final confirmed = await showConfirmationDialog(
+      context: context,
+      title: 'Ukloni sliku',
+      message: 'Da li ste sigurni da zelite ukloniti sliku?',
+      confirmLabel: 'Da, ukloni',
+      destructive: true,
+    );
+    if (confirmed != true) return;
+
+    try {
+      await ref
+          .read(repairRequestServiceProvider)
+          .deleteImage(widget.requestId, imageId);
+      _changed = true;
+      if (!mounted) return;
+      MobileSnackbar.success(context, 'Slika je uklonjena.');
+      await _load();
+    } on ApiException catch (e) {
+      if (!mounted) return;
+      MobileSnackbar.error(context, e.message);
+    }
+  }
+
   Future<void> _acceptOffer(OfferResponse offer) async {
     final confirmed = await showConfirmationDialog(
       context: context,
@@ -156,8 +211,8 @@ class _RepairRequestDetailScreenState
     final showOffers =
         request.status == RepairRequestStatus.offered ||
         request.status == RepairRequestStatus.accepted;
-    final canCancel =
-        request.status == RepairRequestStatus.open ||
+    final isOpen = request.status == RepairRequestStatus.open;
+    final canCancel = isOpen ||
         request.status == RepairRequestStatus.offered;
     final canAccept = request.status == RepairRequestStatus.offered;
     final apiClient = ref.read(apiClientProvider);
@@ -169,12 +224,40 @@ class _RepairRequestDetailScreenState
         RepairRequestHeaderCard(request: request),
         const SizedBox(height: 12),
         RepairRequestInfoCard(request: request),
-        if (request.images.isNotEmpty) ...[
+        if (isOpen || request.images.isNotEmpty) ...[
           const SizedBox(height: 12),
-          RepairRequestImagesCard(
-            images: request.images,
-            baseUrl: apiClient.baseUrl,
-          ),
+          if (isOpen)
+            MobileSectionCard(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ImagePickerSection(
+                    pickedFiles: _pickedImages,
+                    existingImages: request.images,
+                    baseUrl: apiClient.baseUrl,
+                    onPickedChanged: (files) =>
+                        setState(() => _pickedImages = files),
+                    onExistingRemoved: _deleteImage,
+                  ),
+                  if (_pickedImages.isNotEmpty) ...[
+                    const SizedBox(height: 12),
+                    SizedBox(
+                      width: double.infinity,
+                      child: FilledButton.icon(
+                        onPressed: _uploadPickedImages,
+                        icon: const Icon(LucideIcons.upload, size: 16),
+                        label: const Text('Uploaduj slike'),
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            )
+          else
+            RepairRequestImagesCard(
+              images: request.images,
+              baseUrl: apiClient.baseUrl,
+            ),
         ],
         if (showOffers) ...[
           const SizedBox(height: 12),

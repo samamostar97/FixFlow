@@ -17,6 +17,8 @@ public class FixFlowDbContext : DbContext
     public DbSet<Offer> Offers => Set<Offer>();
     public DbSet<Booking> Bookings => Set<Booking>();
     public DbSet<JobStatusHistory> JobStatusHistories => Set<JobStatusHistory>();
+    public DbSet<Review> Reviews => Set<Review>();
+    public DbSet<Payment> Payments => Set<Payment>();
 
     private readonly IHttpContextAccessor? _httpContextAccessor;
 

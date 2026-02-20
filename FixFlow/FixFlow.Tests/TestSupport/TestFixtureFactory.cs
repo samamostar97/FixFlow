@@ -68,6 +68,26 @@ internal static class TestFixtureFactory
             NullLogger<OfferService>.Instance);
     }
 
+    internal static ReviewService CreateReviewService(FixFlowDbContext context)
+    {
+        EnsureMapsterRegistered();
+        return new ReviewService(
+            new BaseRepository<Review>(context),
+            new BaseRepository<Booking>(context),
+            new BaseRepository<TechnicianProfile>(context),
+            NullLogger<ReviewService>.Instance);
+    }
+
+    internal static PaymentService CreatePaymentService(FixFlowDbContext context)
+    {
+        EnsureMapsterRegistered();
+        return new PaymentService(
+            new BaseRepository<Payment>(context),
+            new BaseRepository<Booking>(context),
+            CreateStripeConfiguration(),
+            NullLogger<PaymentService>.Instance);
+    }
+
     internal static AuthService CreateAuthService(FixFlowDbContext context)
     {
         return new AuthService(
@@ -101,6 +121,19 @@ internal static class TestFixtureFactory
             ["Jwt:Issuer"] = "FixFlow.Tests",
             ["Jwt:Audience"] = "FixFlow.Tests",
             ["Jwt:ExpirationInMinutes"] = "60",
+        };
+
+        return new ConfigurationBuilder()
+            .AddInMemoryCollection(values)
+            .Build();
+    }
+
+    private static IConfiguration CreateStripeConfiguration()
+    {
+        var values = new Dictionary<string, string?>
+        {
+            ["Stripe:SecretKey"] = "sk_test_fake",
+            ["Stripe:WebhookSecret"] = "whsec_test_fake",
         };
 
         return new ConfigurationBuilder()

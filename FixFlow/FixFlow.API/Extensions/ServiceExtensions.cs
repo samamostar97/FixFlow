@@ -101,6 +101,8 @@ public static class ServiceExtensions
         services.AddScoped<IRepairRequestService, RepairRequestService>();
         services.AddScoped<IOfferService, OfferService>();
         services.AddScoped<IBookingService, BookingService>();
+        services.AddScoped<IReviewService, ReviewService>();
+        services.AddScoped<IPaymentService, PaymentService>();
         services.AddScoped<SeedService>();
 
         return services;

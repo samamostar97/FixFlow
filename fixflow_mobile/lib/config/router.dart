@@ -1,4 +1,3 @@
-import 'package:fixflow_core/fixflow_core.dart';
 import 'package:fixflow_mobile/providers/auth_provider.dart';
 import 'package:fixflow_mobile/screens/auth/login_screen.dart';
 import 'package:fixflow_mobile/screens/customer/customer_dashboard_screen.dart';
@@ -9,8 +8,7 @@ import 'package:fixflow_mobile/screens/technician/technician_dashboard_screen.da
 import 'package:fixflow_mobile/screens/technician/technician_profile_screen.dart';
 import 'package:fixflow_mobile/screens/technician/technician_requests_screen.dart';
 import 'package:fixflow_mobile/widgets/layout/mobile_role_shell.dart';
-import 'package:fixflow_mobile/widgets/shared/mobile_page_scaffold.dart';
-import 'package:fixflow_mobile/widgets/shared/mobile_section_card.dart';
+import 'package:fixflow_mobile/screens/customer/customer_profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
@@ -61,7 +59,7 @@ class _CustomerHomeState extends State<_CustomerHome> {
         CustomerDashboardScreen(onNavigateToRequests: () => _navigateToTab(1)),
         const MyRepairRequestsScreen(),
         const MyBookingsScreen(),
-        const _CustomerProfilePlaceholder(),
+        const CustomerProfileScreen(),
       ],
       destinations: const [
         NavigationDestination(
@@ -136,65 +134,6 @@ class _TechnicianHomeState extends State<_TechnicianHome> {
           icon: Icon(LucideIcons.user),
           selectedIcon: Icon(LucideIcons.user),
           label: 'Profil',
-        ),
-      ],
-    );
-  }
-}
-
-class _CustomerProfilePlaceholder extends ConsumerWidget {
-  const _CustomerProfilePlaceholder();
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return MobilePageScaffold(
-      title: 'Profil',
-      actions: [
-        IconButton(
-          icon: const Icon(LucideIcons.logOut),
-          onPressed: () => ref.read(authProvider.notifier).logout(),
-        ),
-      ],
-      body: _buildProfileBody(context, ref.watch(authProvider).user!),
-    );
-  }
-
-  Widget _buildProfileBody(BuildContext context, UserResponse user) {
-    final theme = Theme.of(context);
-    return ListView(
-      padding: const EdgeInsets.only(top: 4, bottom: 16),
-      children: [
-        MobileSectionCard(
-          child: Column(
-            children: [
-              CircleAvatar(
-                radius: 36,
-                backgroundColor: theme.colorScheme.primary.withValues(
-                  alpha: 0.15,
-                ),
-                child: Text(
-                  '${user.firstName[0]}${user.lastName[0]}',
-                  style: TextStyle(
-                    color: theme.colorScheme.primary,
-                    fontSize: 24,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                '${user.firstName} ${user.lastName}',
-                style: theme.textTheme.headlineSmall,
-              ),
-              const SizedBox(height: 4),
-              Text(
-                user.email,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
-              ),
-            ],
-          ),
         ),
       ],
     );

@@ -98,7 +98,13 @@ class OfferCard extends StatelessWidget {
         if (onWithdraw != null)
           TextButton(onPressed: onWithdraw, child: const Text('Povuci')),
         if (onAccept != null)
-          FilledButton(onPressed: onAccept, child: const Text('Prihvati')),
+          FilledButton(
+            onPressed: onAccept,
+            style: FilledButton.styleFrom(
+              minimumSize: const Size(0, 40),
+            ),
+            child: const Text('Prihvati'),
+          ),
       ],
     );
   }

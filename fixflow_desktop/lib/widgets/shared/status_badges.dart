@@ -58,6 +58,24 @@ class JobStatusBadge extends StatelessWidget {
   }
 }
 
+class PaymentStatusBadge extends StatelessWidget {
+  final PaymentStatus status;
+
+  const PaymentStatusBadge({super.key, required this.status});
+
+  @override
+  Widget build(BuildContext context) {
+    final color = switch (status) {
+      PaymentStatus.pending => AppStatusColors.pending,
+      PaymentStatus.completed => AppStatusColors.completed,
+      PaymentStatus.failed => AppStatusColors.cancelled,
+      PaymentStatus.refunded => AppStatusColors.open,
+    };
+
+    return _StatusPill(label: status.displayName, color: color);
+  }
+}
+
 class _StatusPill extends StatelessWidget {
   final String label;
   final Color color;

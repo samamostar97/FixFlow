@@ -13,5 +13,6 @@ public class TechnicianProfileResponse
     public string? WorkingHours { get; set; }
     public string? Zone { get; set; }
     public bool IsVerified { get; set; }
+    public double AverageRating { get; set; }
     public DateTime CreatedAt { get; set; }
 }

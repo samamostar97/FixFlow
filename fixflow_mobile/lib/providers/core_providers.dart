@@ -43,3 +43,11 @@ final offerServiceProvider = Provider<OfferService>((ref) {
 final bookingServiceProvider = Provider<BookingService>((ref) {
   return BookingService(client: ref.watch(apiClientProvider));
 });
+
+final reviewServiceProvider = Provider<ReviewService>((ref) {
+  return ReviewService(client: ref.watch(apiClientProvider));
+});
+
+final paymentServiceProvider = Provider<PaymentService>((ref) {
+  return PaymentService(client: ref.watch(apiClientProvider));
+});

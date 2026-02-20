@@ -61,5 +61,11 @@ public static class MappingConfig
 
         // JobStatusHistory — auto-flattens ChangedBy.FirstName/LastName
         TypeAdapterConfig<JobStatusHistory, JobStatusHistoryResponse>.NewConfig();
+
+        // Review — auto-flattens Customer.FirstName/LastName, Technician.FirstName/LastName
+        TypeAdapterConfig<Review, ReviewResponse>.NewConfig();
+
+        // Payment — auto-flattens User.FirstName/LastName
+        TypeAdapterConfig<Payment, PaymentResponse>.NewConfig();
     }
 }
